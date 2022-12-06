@@ -1,10 +1,56 @@
-use std::{convert::Infallible, fs, io, path::Path};
+//! Contains definitions for mod manifest files and their deserialization.
+
+use std::{
+    convert::Infallible,
+    fs::{self, File},
+    io::{self, BufReader, Read},
+    path::Path,
+};
 
 use serde::Deserialize;
 use thiserror::Error;
+use zip::{result::ZipError, ZipArchive};
 
 /// An array of identifiers to mod files.
-static IDENTIFIERS: [&str; 3] = ["fabric.mod.json", "quilt.mod.json", "mods.toml"];
+static IDENTIFIERS: [&str; 3] = ["quilt.mod.json", "fabric.mod.json", "META-INF/mods.toml"];
+
+/// Read the jar file at the given path.
+pub fn read_jar_file<P: AsRef<Path>>(path: P) -> Result<ModMetadata, ManifestError> {
+    let file = File::open(path.as_ref()).map_err(ManifestError::IoError)?;
+    let mut zip = ZipArchive::new(BufReader::new(file)).map_err(ManifestError::JairUnzipFail)?;
+
+    // for every identifier, check if it exists
+    for identifier in IDENTIFIERS {
+        let mut entry = match zip.by_name(identifier) {
+            Ok(entry) => entry,
+            Err(_) => continue,
+        };
+
+        // read entry
+        let mut entry_contents = String::with_capacity(
+            entry.size().try_into().expect("file size too large for current platform"),
+        );
+        entry.read_to_string(&mut entry_contents).map_err(ManifestError::IoError)?;
+
+        // deserialize the manifest into the generic version
+        let file: ModMetadata = match identifier {
+            "fabric.mod.json" => FabricManifest::from_str(entry_contents)?
+                .try_into()
+                .map_err(|_| ManifestError::DeserializeError)?,
+            "quilt.mod.json" => QuiltManifest::from_str(entry_contents)?
+                .try_into()
+                .map_err(|_| ManifestError::DeserializeError)?,
+            "META-INF/mods.toml" => ForgeManifest::from_str(entry_contents)?
+                .try_into()
+                .map_err(|_| ManifestError::DeserializeError)?,
+            _ => unreachable!(),
+        };
+
+        return Ok(file);
+    }
+
+    Err(ManifestError::MissingMetadataFile)
+}
 
 /// Metadata for a mod.
 pub struct ModMetadata {
@@ -26,8 +72,12 @@ pub enum ModKind {
 /// An enumeration of error types that can be raised during metadata reading.
 #[derive(Error, Debug)]
 pub enum ManifestError {
-    #[error("failed to read manifest file")]
-    ReadError(#[from] io::Error),
+    #[error("encountered an IO error")]
+    IoError(#[from] io::Error),
+    #[error("failed to unzip jar file")]
+    JairUnzipFail(#[from] ZipError),
+    #[error("failed to find a valid metadata file")]
+    MissingMetadataFile,
     #[error("failed to deserialize manifest")]
     DeserializeError,
     #[error("empty forge manifest")]
@@ -129,9 +179,9 @@ pub struct QuiltManifest {
 }
 
 impl TryInto<ModMetadata> for QuiltManifest {
-    type Error = ManifestError;
+    type Error = Infallible;
 
-    fn try_into(self) -> Result<ModMetadata, Self::Error> {
+    fn try_into(self) -> Result<ModMetadata, Infallible> {
         Ok(ModMetadata {
             description: self
                 .quilt_loader
@@ -177,47 +227,47 @@ pub struct QuiltModMetadata {
     pub description: String,
 }
 
-
 #[cfg(test)]
 mod tests {
-    use std::error::Error;
-
     use pretty_assertions::assert_eq;
 
-    use crate::jar::{ForgeManifest, Manifest, ModMetadata, FabricManifest, QuiltManifest};
-	
-	#[test]
-	pub fn test_deserialize_fabric_metadata() -> Result<(), Box<dyn Error>> {
-		let metadata: ModMetadata =
-			FabricManifest::from_str(include_str!("../tests/assets/fabric.mod.json"))?
-				.try_into()?;
-		assert_eq!(metadata.id, "fabric-api-base");
-		assert_eq!(metadata.name, "Fabric API Base".to_string());
-		assert_eq!(metadata.version, "${version}".to_string());
+    use super::*;
 
-		Ok(())
-	}
 
     #[test]
-    pub fn test_deserialize_forge_metadata() -> Result<(), Box<dyn Error>> {
-        let metadata: ModMetadata =
-            ForgeManifest::from_str(include_str!("../tests/assets/mods.toml"))?.try_into()?;
+    pub fn test_read_fabric_jar() -> Result<(), ManifestError> {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("./tests/assets/jars/fabric-api-0.68.0+1.19.2.jar");
+        let metadata = read_jar_file(path)?;
 
-        assert_eq!(metadata.id, "cloth_config");
-        assert_eq!(metadata.description, Some("An API for config screens.\n".into()));
+		assert_eq!("fabric-api", metadata.id);
+        assert_eq!("Fabric API".to_string(), metadata.name);
+        assert_eq!("0.68.0+1.19.2".to_string(), metadata.version);
 
         Ok(())
     }
 
+    #[test]
+    pub fn test_read_forge_jar() -> Result<(), ManifestError> {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("./tests/assets/jars/cloth-config-8.2.88-forge.jar");
+        let metadata = read_jar_file(path)?;
 
-	#[test]
-	pub fn test_deserialize_quilt_metadata() -> Result<(), Box<dyn Error>> {
-		let metadata: ModMetadata =
-            QuiltManifest::from_str(include_str!("../tests/assets/quilt.mod.json"))?.try_into()?;
-
-        assert_eq!(metadata.id, "ok_zoomer");
-        assert_eq!(metadata.name, "Ok Zoomer");
+        assert_eq!("cloth_config", metadata.id);
+        assert_eq!(Some("An API for config screens.\n".into()), metadata.description);
 
         Ok(())
-	}
+    }
+
+    #[test]
+    pub fn test_read_quilt_jar() -> Result<(), ManifestError> {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("./tests/assets/jars/ok_zoomer-5.0.0-beta.9+1.19.jar");
+        let metadata = read_jar_file(path)?;
+
+        assert_eq!("ok_zoomer", metadata.id);
+        assert_eq!("Ok Zoomer", metadata.name);
+
+        Ok(())
+    }
 }

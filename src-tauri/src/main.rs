@@ -1,8 +1,8 @@
 #![cfg_attr(all(not(debug_assertions), target_os = "windows"), windows_subsystem = "windows")]
 
 mod config;
+mod fs;
 mod instance;
-mod jar;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
