@@ -3,14 +3,19 @@ import "./App.css";
 import React from "react";
 import { RouterProvider } from "react-router-dom";
 
+import { CssBaseline } from "@mui/material";
+
+import { ReduxProvider } from "./redux";
 import { router } from "./router";
+import { ThemeProvider } from "./theme";
 
-function App() {
-	return (
-		<React.StrictMode>
-			<RouterProvider router={router} />
-		</React.StrictMode>
-	);
-}
-
-export default App;
+export const App = () => (
+	<React.StrictMode>
+		<ReduxProvider>
+			<CssBaseline />
+			<ThemeProvider>
+				<RouterProvider router={router} />
+			</ThemeProvider>
+		</ReduxProvider>
+	</React.StrictMode>
+);

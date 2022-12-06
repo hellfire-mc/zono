@@ -103,7 +103,6 @@ function DashboardContent() {
 	return (
 		<ThemeProvider theme={mdTheme}>
 			<Box sx={{ display: "flex" }}>
-				<CssBaseline />
 				<AppBar position="absolute" open={open}>
 					<Toolbar
 						sx={{
@@ -214,6 +213,4 @@ function DashboardContent() {
 	);
 }
 
-export default function Dashboard() {
-	return <DashboardContent />;
-}
+export const Dashboard = () => <DashboardContent />;
