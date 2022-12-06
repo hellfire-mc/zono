@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ThemeProvider as EmotionThemeProvider } from "@emotion/react";
+import { SaasProvider } from "@saas-ui/react";
 
 import { useAppSelector } from "../redux/hooks";
 import { Theme } from "../redux/slices/theme";
@@ -26,7 +26,7 @@ export const ThemeProvider: React.FC<{
 	return (
 		<>
 			<SystemThemeListener />
-			<EmotionThemeProvider theme={theme}>{children}</EmotionThemeProvider>
+			<SaasProvider theme={theme}>{children}</SaasProvider>
 		</>
 	);
 };

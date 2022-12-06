@@ -14,7 +14,7 @@ interface ThemeState {
 export const theme = createSlice({
 	name: "theme",
 	initialState: {
-		active: Theme.Light,
+		active: Theme.Dark,
 		useSystem: false,
 	} as ThemeState,
 	reducers: {

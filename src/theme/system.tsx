@@ -40,12 +40,14 @@ export const SystemThemeListener = () => {
 				logger.warn("Failed to register system theme event listener")
 			);
 
-		return async () => {
+		return () => {
 			logger.debug("Cleaning up system theme event listener...");
-			const unlisten = await handler;
-			if (unlisten) {
-				unlisten();
-			}
+			(async () => {
+				const unlisten = await handler;
+				if (unlisten) {
+					unlisten();
+				}
+			})();
 		};
 	}, [dispatch]);
 

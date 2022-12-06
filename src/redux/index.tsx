@@ -3,11 +3,13 @@ import { Provider } from "react-redux";
 
 import { configureStore } from "@reduxjs/toolkit";
 
+import { instance } from "./slices/instance";
 import { theme } from "./slices/theme";
 
 const store = configureStore({
 	reducer: {
 		theme: theme.reducer,
+		instance: instance.reducer,
 	},
 });
 
