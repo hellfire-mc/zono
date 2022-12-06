@@ -42,6 +42,8 @@ pnpm tauri build
 
 If you are interested in contributing to Zono, have a look at [CONTRIBUTING](./CONTRIBUTING.md). It provides some basic information on how the project is structured and how to contribute.
 
-## License
+## License 
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fkaylendog%2Fzono.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fkaylendog%2Fzono?ref=badge_shield)
 
 Zono is distributed under the terms of the GNU General Public License, a copy of which can be found in the [LICENSE](./LICENSE) file. More information on copyright terms can be found in [COPYRIGHT](./COPYRIGHT.md).
