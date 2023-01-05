@@ -6,7 +6,6 @@ import { useAppSelector } from "../redux/hooks";
 import { Theme } from "../redux/slices/theme";
 import { DARK_THEME } from "./dark";
 import { LIGHT_THEME } from "./light";
-import { SystemThemeListener } from "./system";
 
 export const useTheme = () => {
 	const theme = useAppSelector((state) => state.theme.active);
@@ -25,7 +24,7 @@ export const ThemeProvider: React.FC<{
 
 	return (
 		<>
-			<SystemThemeListener />
+			{/* <SystemThemeListener /> */}
 			<SaasProvider theme={theme}>{children}</SaasProvider>
 		</>
 	);

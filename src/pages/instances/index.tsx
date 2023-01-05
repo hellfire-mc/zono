@@ -1,10 +1,10 @@
 import { VStack } from "@chakra-ui/react";
 
+import { InstanceGroup } from "../../components/instances/InstanceGroup";
 import { PageLayout } from "../../layout/PageLayout";
 import { useInstanceGroups } from "../../redux/slices/instance";
-import { InstanceGroup } from "./InstanceGroup";
 
-export const Instances = () => {
+const Instances = () => {
 	const groups = useInstanceGroups().map(({ name, instances }, id) => (
 		<InstanceGroup key={id} name={name} instances={instances} />
 	));
@@ -17,3 +17,5 @@ export const Instances = () => {
 		</PageLayout>
 	);
 };
+
+export default Instances;

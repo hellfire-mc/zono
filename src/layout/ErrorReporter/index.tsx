@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { useRouteError } from "react-router-dom";
 
 import { Button, ButtonGroup, Center, Code, Heading, Text, VStack } from "@chakra-ui/react";
 
@@ -8,10 +7,8 @@ import { getLogger } from "../../util/logging";
 const logger = getLogger("ErrorReporter");
 
 export const ErrorReporter = () => {
-	const error = useRouteError();
-
 	useEffect(() => {
-		logger.info("Caught error at error boundary - uploading report...", error);
+		logger.info("Caught error at error boundary - uploading report...");
 	}, []);
 
 	return (
@@ -19,7 +16,7 @@ export const ErrorReporter = () => {
 			<VStack maxWidth="600px" spacing={8}>
 				<Heading size="lg">Whoops...</Heading>
 				<Text textAlign="center">
-					Looks like you've encountered an error. We&apos;ve gone ahead and
+					Looks like you&apos;ve encountered an error. We&apos;ve gone ahead and
 					reported this for you, so it should be fixed soon!
 				</Text>
 				<Text>

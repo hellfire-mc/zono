@@ -1,5 +1,5 @@
+import Link from "next/link";
 import { AiFillExperiment, AiTwotoneAppstore, AiTwotoneSetting } from "react-icons/ai";
-import { NavLink } from "react-router-dom";
 
 import { Divider, HStack, Icon, List, ListItem, Text, VStack } from "@chakra-ui/react";
 
@@ -33,12 +33,12 @@ export const Sidebar: React.FC<{}> = () => {
 			<List spacing={2} width="100%">
 				{NAV_LINKS.map(({ icon, text, to }, i) => (
 					<ListItem key={i}>
-						<NavLink to={to}>
+						<Link href={to}>
 							<HStack>
 								<Icon as={icon} />
 								<Text size="sm">{text}</Text>
 							</HStack>
-						</NavLink>
+						</Link>
 					</ListItem>
 				))}
 				<Divider />

@@ -1,9 +1,10 @@
 {
 	"build": {
 		"beforeDevCommand": "pnpm dev",
-		"beforeBuildCommand": "pnpm build",
+		"beforeBuildCommand": "pnpm build && pnpm export",
 		"devPath": "http://localhost:1420",
-		"distDir": "../dist"
+		"distDir": "../out",
+		"withGlobalTauri": false
 	},
 	"package": {
 		"productName": "zono",
@@ -58,7 +59,8 @@
 				"height": 600,
 				"resizable": true,
 				"title": "zono",
-				"width": 800
+				"width": 800,
+				"url": "/instances.html"
 			}
 		]
 	}

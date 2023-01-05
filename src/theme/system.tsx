@@ -13,7 +13,6 @@ export const SystemThemeListener = () => {
 
 	useEffect(() => {
 		const updateFromWindow = async (theme?: "dark" | "light") => {
-			// get window theme
 			const newTheme =
 				theme ??
 				(await appWindow.theme().catch(() => {
