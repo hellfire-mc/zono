@@ -2,7 +2,7 @@
 	"build": {
 		"beforeDevCommand": "pnpm dev",
 		"beforeBuildCommand": "pnpm build && pnpm export",
-		"devPath": "http://localhost:1420",
+		"devPath": "http://localhost:3000",
 		"distDir": "../out",
 		"withGlobalTauri": false
 	},
@@ -60,7 +60,7 @@
 				"resizable": true,
 				"title": "zono",
 				"width": 800,
-				"url": "/instances.html"
+				"url": "/"
 			}
 		]
 	}

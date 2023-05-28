@@ -233,14 +233,13 @@ mod tests {
 
     use super::*;
 
-
     #[test]
     pub fn test_read_fabric_jar() -> Result<(), ManifestError> {
         let path = Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("./tests/assets/jars/fabric-api-0.68.0+1.19.2.jar");
         let metadata = read_jar_file(path)?;
 
-		assert_eq!("fabric-api", metadata.id);
+        assert_eq!("fabric-api", metadata.id);
         assert_eq!("Fabric API".to_string(), metadata.name);
         assert_eq!("0.68.0+1.19.2".to_string(), metadata.version);
 
