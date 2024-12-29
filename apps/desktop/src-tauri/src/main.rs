@@ -1,17 +1,13 @@
 #![cfg_attr(all(not(debug_assertions), target_os = "windows"), windows_subsystem = "windows")]
 
-mod config;
-mod fs;
-mod instance;
+use zono::rspc::RouterBuilder;
 
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
+#[tokio::main]
+async fn main() {
+    let router = RouterBuilder::default().build();
 
-fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
+        .plugin(rspc::integrations::tauri::plugin(router.into(), || ()))
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
