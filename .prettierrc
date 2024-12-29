@@ -1,3 +1,14 @@
 {
-	"useTabs": true
+	"arrowParens": "always",
+	"printWidth": 100,
+	"trailingComma": "es5",
+	"useTabs": true,
+	"overrides": [
+		{
+			"files": "*.yaml",
+			"options": {
+				"useTabs": false
+			}
+		}
+	]
 }
